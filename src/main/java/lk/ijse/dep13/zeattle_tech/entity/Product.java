@@ -1,15 +1,14 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "product")
@@ -31,4 +30,12 @@ public class Product {
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Image> images;
 
+    public Product(String name, String brand, BigDecimal price, int stock, String description, Category category) {
+        this.name = name;
+        this.brand = brand;
+        this.price = price;
+        this.stock = stock;
+        this.description = description;
+        this.category = category;
+    }
 }

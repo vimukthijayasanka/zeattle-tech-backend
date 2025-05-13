@@ -1,14 +1,16 @@
 package lk.ijse.dep13.zeattle_tech.service.product;
 
+import lk.ijse.dep13.zeattle_tech.dto.request.AddProductRequestTO;
+import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
 
 import java.util.List;
 
 public interface ProductService {
-    Product addProduct(Product product);
+    Product addProduct(AddProductRequestTO product);
     Product getProductById(Long id);
     void deleteProductById(Long id);
-    void updateProduct(Product product, Long productId);
+    Product updateProduct(ProductUpdateRequestTO request, Long productId);
     List<Product> getAllProducts();
     List<Product> getProductsByCategory(String category);
     List<Product> getProductsByBrand(String brand);

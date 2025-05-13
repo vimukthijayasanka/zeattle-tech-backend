@@ -1,14 +1,13 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "category")
@@ -18,9 +17,11 @@ public class Category {
     private Long id;
 
     private String name;
-    private String description;
 
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 
+    public Category(String name) {
+        this.name = name;
+    }
 }
