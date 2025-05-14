@@ -1,4 +1,4 @@
-package lk.ijse.dep13.zeattle_tech.dto.request;
+package lk.ijse.dep13.zeattle_tech.exception;
 
 public class AlreadyExistsException extends RuntimeException {
     public AlreadyExistsException(String message) {

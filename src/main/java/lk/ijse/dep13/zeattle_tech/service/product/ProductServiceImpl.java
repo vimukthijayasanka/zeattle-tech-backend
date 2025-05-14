@@ -3,10 +3,12 @@ package lk.ijse.dep13.zeattle_tech.service.product;
 import lk.ijse.dep13.zeattle_tech.dto.request.AddProductRequestTO;
 import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.entity.Category;
+import lk.ijse.dep13.zeattle_tech.entity.Image;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
 import lk.ijse.dep13.zeattle_tech.exception.ProductNotFoundException;
 import lk.ijse.dep13.zeattle_tech.repository.CategoryRepository;
 import lk.ijse.dep13.zeattle_tech.repository.ProductRepository;
+import lk.ijse.dep13.zeattle_tech.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -19,6 +21,7 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final S3Service s3Service;
 
     @Override
     public Product getProductById(Long id) {
@@ -29,6 +32,10 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProductById(Long id) {
         productRepository.findById(id).ifPresentOrElse(productRepository::delete,
                 () -> {throw new ProductNotFoundException("Product Not Found");});
+        Optional<Product> product = productRepository.findById(id);
+        for (Image image : product.get().getImages()) {
+            s3Service.deleteFile(image.getImageUrl());
+        }
     }
 
     @Override

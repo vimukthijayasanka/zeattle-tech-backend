@@ -8,6 +8,8 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,7 +20,6 @@ public class S3Config {
 
     private final String accessKey;
     private final String secretKey;
-    private final String bucketName;
     private final String region;
 
     public S3Config(@Value("${aws.credential.path}") String path) throws IOException {
@@ -28,7 +29,6 @@ public class S3Config {
         JSONObject json = new JSONObject(content);
         this.accessKey = json.getString("aws_access_key_id");
         this.secretKey = json.getString("aws_secret_access_key");
-        this.bucketName = json.getString("aws_bucket_name");
         this.region = json.getString("aws_region");
     }
 
@@ -37,5 +37,49 @@ public class S3Config {
         return S3Client.builder().region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
                 .build();
+    }
+
+    @Bean
+    public S3Presigner s3Presigner() {
+        return new S3Presigner() {
+            @Override
+            public PresignedGetObjectRequest presignGetObject(GetObjectPresignRequest getObjectPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedPutObjectRequest presignPutObject(PutObjectPresignRequest putObjectPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedDeleteObjectRequest presignDeleteObject(DeleteObjectPresignRequest deleteObjectPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedCreateMultipartUploadRequest presignCreateMultipartUpload(CreateMultipartUploadPresignRequest createMultipartUploadPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedUploadPartRequest presignUploadPart(UploadPartPresignRequest uploadPartPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedCompleteMultipartUploadRequest presignCompleteMultipartUpload(CompleteMultipartUploadPresignRequest completeMultipartUploadPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public PresignedAbortMultipartUploadRequest presignAbortMultipartUpload(AbortMultipartUploadPresignRequest abortMultipartUploadPresignRequest) {
+                return null;
+            }
+
+            @Override
+            public void close() {
+            }
+        };
     }
 }

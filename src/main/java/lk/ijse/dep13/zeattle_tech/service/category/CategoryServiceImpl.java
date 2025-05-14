@@ -1,6 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.service.category;
 
-import lk.ijse.dep13.zeattle_tech.dto.request.AlreadyExistsException;
+import lk.ijse.dep13.zeattle_tech.exception.AlreadyExistsException;
 import lk.ijse.dep13.zeattle_tech.entity.Category;
 import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
 import lk.ijse.dep13.zeattle_tech.repository.CategoryRepository;
