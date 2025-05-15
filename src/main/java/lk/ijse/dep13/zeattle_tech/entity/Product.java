@@ -1,5 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,6 +29,7 @@ public class Product {
     private Category category;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<Image> images;
 
     public Product(String name, String brand, BigDecimal price, int stock, String description, Category category) {

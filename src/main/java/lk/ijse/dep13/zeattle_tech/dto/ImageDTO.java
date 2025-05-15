@@ -12,5 +12,5 @@ import java.io.Serializable;
 public class ImageDTO implements Serializable {
     private Long imageId;
     private String imageName;
-    private String downloadUrl;
+    private String imageUrl;
 }

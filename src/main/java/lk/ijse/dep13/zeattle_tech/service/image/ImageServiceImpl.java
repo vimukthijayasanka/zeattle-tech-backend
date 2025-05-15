@@ -1,6 +1,7 @@
 package lk.ijse.dep13.zeattle_tech.service.image;
 
 import lk.ijse.dep13.zeattle_tech.dto.ImageDTO;
+import lk.ijse.dep13.zeattle_tech.dto.ProductDTO;
 import lk.ijse.dep13.zeattle_tech.entity.Image;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
 import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
@@ -46,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<ImageDTO> saveImages(List<MultipartFile> files, Long productId) {
-        Product product = productService.getProductById(productId);
+        Product product = productService.getProductEntityById(productId);
         List<ImageDTO> savedImageDTO = new ArrayList<>();
         for (MultipartFile file : files) {
             try{
@@ -66,7 +67,7 @@ public class ImageServiceImpl implements ImageService {
                 ImageDTO imageDTO = new ImageDTO();
                 imageDTO.setImageId(saveImage.getId());
                 imageDTO.setImageName(saveImage.getFileName());
-                imageDTO.setDownloadUrl(s3Service.generatePresignedUrl(saveImage.getImageUrl(), Duration.ofMinutes(12)).toString());
+                imageDTO.setImageUrl(s3Service.generatePresignedUrl(saveImage.getImageUrl(), Duration.ofMinutes(12)).toString());
                 savedImageDTO.add(imageDTO);
             } catch (IOException e){
                 throw new RuntimeException(e.getMessage());

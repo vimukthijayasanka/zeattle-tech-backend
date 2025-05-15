@@ -1,5 +1,7 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,6 +13,7 @@ import lombok.*;
 @Table(name = "image")
 public class Image {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String fileName;
@@ -19,5 +22,6 @@ public class Image {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonBackReference
     private Product product;
 }

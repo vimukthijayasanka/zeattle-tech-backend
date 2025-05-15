@@ -1,5 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class Category {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "category")
     private List<Product> products;
 

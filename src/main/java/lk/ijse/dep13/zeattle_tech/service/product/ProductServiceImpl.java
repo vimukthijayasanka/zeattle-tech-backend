@@ -1,14 +1,17 @@
 package lk.ijse.dep13.zeattle_tech.service.product;
 
+import lk.ijse.dep13.zeattle_tech.dto.ProductDTO;
 import lk.ijse.dep13.zeattle_tech.dto.request.AddProductRequestTO;
 import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.entity.Category;
 import lk.ijse.dep13.zeattle_tech.entity.Image;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
 import lk.ijse.dep13.zeattle_tech.exception.ProductNotFoundException;
+import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
 import lk.ijse.dep13.zeattle_tech.repository.CategoryRepository;
 import lk.ijse.dep13.zeattle_tech.repository.ProductRepository;
 import lk.ijse.dep13.zeattle_tech.service.S3Service;
+import lk.ijse.dep13.zeattle_tech.service.util.Transformer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,50 +25,79 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final S3Service s3Service;
+    private final Transformer transformer;
 
     @Override
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(()-> new ProductNotFoundException("Product Not Found"));
+    public ProductDTO getProductById(Long id) {
+       return transformer.productToProductDTO(productRepository.findById(id).orElseThrow(()-> new ProductNotFoundException("Product Not Found " + id)));
+    }
+
+    @Override
+    public Product getProductEntityById(Long id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product Not Found " + id));
     }
 
     @Override
     public void deleteProductById(Long id) {
-        productRepository.findById(id).ifPresentOrElse(productRepository::delete,
-                () -> {throw new ProductNotFoundException("Product Not Found");});
-        Optional<Product> product = productRepository.findById(id);
-        for (Image image : product.get().getImages()) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product Not Found " + id));
+
+        for (Image image : product.getImages()) {
             s3Service.deleteFile(image.getImageUrl());
         }
+        productRepository.delete(product);
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> productList = productRepository.findAll();
+        return transformer.ProductsToProductDTOs(productList);
     }
 
     @Override
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findByCategoryName(category);
+    public List<ProductDTO> getProductsByCategory(String category) {
+        List<Product> productsByCategoryName = productRepository.findByCategoryName(category);
+        if(productsByCategoryName.isEmpty()){
+            throw new ProductNotFoundException("There is no product with category " + category);
+        }
+        return transformer.ProductsToProductDTOs(productsByCategoryName);
     }
 
     @Override
-    public List<Product> getProductsByBrand(String brand) {
-        return productRepository.findByBrand(brand);
+    public List<ProductDTO> getProductsByBrand(String brand) {
+        List<Product> productsByBrand = productRepository.findByBrand(brand);
+        if(productsByBrand.isEmpty()){
+            throw new ProductNotFoundException("There is no product with brand " + brand);
+        }
+        return transformer.ProductsToProductDTOs(productsByBrand);
     }
 
     @Override
-    public List<Product> getProductsByCategoryAndBrand(String category, String brand) {
-        return productRepository.findByCategoryNameAndBrand(category, brand);
+    public List<ProductDTO> getProductsByCategoryAndBrand(String category, String brand) {
+        List<Product> byCategoryNameAndBrand = productRepository.findByCategoryNameAndBrand(category, brand);
+        if(byCategoryNameAndBrand.isEmpty()){
+            throw new ResourceNotFoundException("There is no product with category " + category + " and brand " + brand);
+        }
+        return transformer.ProductsToProductDTOs(byCategoryNameAndBrand);
     }
 
     @Override
-    public List<Product> getProductsByName(String productName) {
-        return productRepository.findByName(productName);
+    public List<ProductDTO> getProductsByName(String productName) {
+        List<Product> productByName = productRepository.findByName(productName);
+        if(productByName.isEmpty()){
+            throw new ResourceNotFoundException("There is no product with name " + productName);
+        }
+        return transformer.ProductsToProductDTOs(productByName);
     }
 
     @Override
-    public List<Product> getProductsByBrandAndName(String brand, String name) {
-        return productRepository.findByBrandAndName(brand, name);
+    public List<ProductDTO> getProductsByBrandAndName(String brand, String name) {
+        List<Product> productByBrandAndName = productRepository.findByBrandAndName(brand, name);
+        if(productByBrandAndName.isEmpty()){
+            throw new ResourceNotFoundException("There is no product with brand " + brand + " and " + name);
+        }
+        return transformer.ProductsToProductDTOs(productByBrandAndName);
     }
 
     @Override
@@ -74,7 +106,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product addProduct(AddProductRequestTO request) {
+    public ProductDTO addProduct(AddProductRequestTO request) {
         /*
         Check the category is available in DB, if it's not in the
         DB save it as new category, otherwise save the new Product
@@ -86,7 +118,8 @@ public class ProductServiceImpl implements ProductService {
                     return categoryRepository.save(newCategory);
                 });
         request.setCategory(category);
-        return productRepository.save(createProduct(request, category));
+        Product product = productRepository.save(createProduct(request, category));
+        return transformer.productToProductDTO(product);
     }
 
     private Product createProduct(AddProductRequestTO request, Category category) {
@@ -100,11 +133,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Product updateProduct(ProductUpdateRequestTO request, Long productId) {
-        return productRepository.findById(productId)
+    public ProductDTO updateProduct(ProductUpdateRequestTO request, Long productId) {
+        Product product = productRepository.findById(productId)
                 .map(existingProduct -> updateExistingProduct(existingProduct, request))
-                .map(productRepository :: save)
-                .orElseThrow(()->new ProductNotFoundException("Product Not Found"));
+                .map(productRepository::save)
+                .orElseThrow(() -> new ProductNotFoundException("Product not found with id: " + productId));
+        return transformer.productToProductDTO(product);
     }
 
     private Product updateExistingProduct(Product existingProduct, ProductUpdateRequestTO request) {
@@ -115,6 +149,9 @@ public class ProductServiceImpl implements ProductService {
         existingProduct.setDescription(request.getDescription());
 
         Category category = categoryRepository.findByName(request.getCategory().getName());
+        if (category == null) {
+            throw new ResourceNotFoundException("Category not found");
+        }
         existingProduct.setCategory(category);
         return existingProduct;
     }

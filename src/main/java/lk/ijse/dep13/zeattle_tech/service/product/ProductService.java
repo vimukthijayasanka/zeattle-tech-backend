@@ -1,5 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.service.product;
 
+import lk.ijse.dep13.zeattle_tech.dto.ProductDTO;
 import lk.ijse.dep13.zeattle_tech.dto.request.AddProductRequestTO;
 import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
@@ -7,15 +8,16 @@ import lk.ijse.dep13.zeattle_tech.entity.Product;
 import java.util.List;
 
 public interface ProductService {
-    Product addProduct(AddProductRequestTO product);
-    Product getProductById(Long id);
+    ProductDTO addProduct(AddProductRequestTO product);
+    ProductDTO getProductById(Long id);
+    Product getProductEntityById(Long id);
     void deleteProductById(Long id);
-    Product updateProduct(ProductUpdateRequestTO request, Long productId);
-    List<Product> getAllProducts();
-    List<Product> getProductsByCategory(String category);
-    List<Product> getProductsByBrand(String brand);
-    List<Product> getProductsByCategoryAndBrand(String category, String brand);
-    List<Product> getProductsByName(String productName);
-    List<Product> getProductsByBrandAndName(String brand, String name);
+    ProductDTO updateProduct(ProductUpdateRequestTO request, Long productId);
+    List<ProductDTO> getAllProducts();
+    List<ProductDTO> getProductsByCategory(String category);
+    List<ProductDTO> getProductsByBrand(String brand);
+    List<ProductDTO> getProductsByCategoryAndBrand(String category, String brand);
+    List<ProductDTO> getProductsByName(String productName);
+    List<ProductDTO> getProductsByBrandAndName(String brand, String name);
     Long countProductsByBrandAndName(String brand, String name);
 }

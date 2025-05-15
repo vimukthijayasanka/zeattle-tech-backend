@@ -9,7 +9,6 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
-import software.amazon.awssdk.services.s3.presigner.model.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -41,45 +40,7 @@ public class S3Config {
 
     @Bean
     public S3Presigner s3Presigner() {
-        return new S3Presigner() {
-            @Override
-            public PresignedGetObjectRequest presignGetObject(GetObjectPresignRequest getObjectPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedPutObjectRequest presignPutObject(PutObjectPresignRequest putObjectPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedDeleteObjectRequest presignDeleteObject(DeleteObjectPresignRequest deleteObjectPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedCreateMultipartUploadRequest presignCreateMultipartUpload(CreateMultipartUploadPresignRequest createMultipartUploadPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedUploadPartRequest presignUploadPart(UploadPartPresignRequest uploadPartPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedCompleteMultipartUploadRequest presignCompleteMultipartUpload(CompleteMultipartUploadPresignRequest completeMultipartUploadPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public PresignedAbortMultipartUploadRequest presignAbortMultipartUpload(AbortMultipartUploadPresignRequest abortMultipartUploadPresignRequest) {
-                return null;
-            }
-
-            @Override
-            public void close() {
-            }
-        };
+        return S3Presigner.builder().region(Region.of(region))
+                .credentialsProvider(StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey))).build();
     }
 }
