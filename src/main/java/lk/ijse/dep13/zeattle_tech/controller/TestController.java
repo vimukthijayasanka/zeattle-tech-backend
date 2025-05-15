@@ -1,6 +1,5 @@
-package lk.ijse.dep13.zeattle_tech.api;
+package lk.ijse.dep13.zeattle_tech.controller;
 
-import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.service.S3Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;

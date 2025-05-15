@@ -17,6 +17,7 @@ import java.sql.SQLException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,9 +35,13 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public void deleteImageById(Long id) {
-        imageRepository.findById(id).ifPresentOrElse(imageRepository::delete, () -> {
+        Optional<Image> image = imageRepository.findById(id);
+        if (image.isPresent()) {
+            imageRepository.delete(image.get());
+            s3Service.deleteFile(image.get().getImageUrl());
+        } else {
             throw new ResourceNotFoundException("Image Not Found with id " + id);
-        });
+        }
     }
 
     @Override
