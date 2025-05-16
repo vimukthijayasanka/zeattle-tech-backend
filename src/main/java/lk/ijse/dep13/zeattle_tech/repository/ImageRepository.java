@@ -2,9 +2,11 @@ package lk.ijse.dep13.zeattle_tech.repository;
 
 import lk.ijse.dep13.zeattle_tech.entity.Image;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public interface ImageRepository extends JpaRepository<Image, Long> {
     public List<Image> findByProductId(Long id);
 }
