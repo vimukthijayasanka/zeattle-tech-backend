@@ -8,6 +8,7 @@ import lk.ijse.dep13.zeattle_tech.enums.OrderStatus;
 import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
 import lk.ijse.dep13.zeattle_tech.repository.OrderRepository;
 import lk.ijse.dep13.zeattle_tech.repository.ProductRepository;
+import lk.ijse.dep13.zeattle_tech.service.cart.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 import java.nio.file.ReadOnlyFileSystemException;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -23,15 +25,27 @@ public class OrderServiceImpl implements OrderService{
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final CartService cartService;
 
     @Override
     public Order placeOrder(Long userId) {
-        return null;
+        Cart cart = cartService.getCartByUserId(userId);
+
+        Order order = createOrder(cart);
+        List<OrderItem> orderItemList = createOrderItems(order, cart);
+
+        order.setOrderItems(new HashSet<>(orderItemList));
+        order.setTotalAmount(calculateTotalAmount(orderItemList));
+        Order saveOrder = orderRepository.save(order);
+
+        cartService.clearCart(cart.getId());
+
+        return saveOrder;
     }
 
     private Order createOrder(Cart cart) {
         Order order = new Order();
-        // TODO set the user...
+        order.setUser(cart.getUser());
         order.setOrderStatus(OrderStatus.PENDING);
         order.setOrderDate(LocalDate.now());
         order.setOrderTime(LocalTime.now());
@@ -65,5 +79,9 @@ public class OrderServiceImpl implements OrderService{
     public Order getOrder(Long orderId) {
         return orderRepository.findById(orderId)
                 .orElseThrow(()->new ResourceNotFoundException("Order not found"));
+    }
+
+    public List<Order> getUserOrders(Long userId) {
+        return orderRepository.findByUserId(userId);
     }
 }
