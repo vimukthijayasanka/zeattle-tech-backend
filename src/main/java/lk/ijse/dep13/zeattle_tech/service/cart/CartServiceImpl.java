@@ -4,9 +4,12 @@ import lk.ijse.dep13.zeattle_tech.entity.Cart;
 import lk.ijse.dep13.zeattle_tech.repository.CartItemRepository;
 import lk.ijse.dep13.zeattle_tech.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
@@ -14,6 +17,7 @@ public class CartServiceImpl implements CartService{
 
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
+    private final AtomicLong cartIdGenerator = new AtomicLong(0);
 
     @Override
     public Cart getCart(Long id) {
@@ -23,6 +27,7 @@ public class CartServiceImpl implements CartService{
         return cartRepository.save(cart);
     }
 
+    @Transactional
     @Override
     public void clearCart(Long id) {
         Cart cart = getCart(id);
@@ -35,5 +40,13 @@ public class CartServiceImpl implements CartService{
     public BigDecimal getTotalPrice(Long id) {
         Cart cart = getCart(id);
         return cart.getTotalAmount();
+    }
+
+    @Override
+    public Long initializeNewCart() {
+        Cart newCart = new Cart();
+        Long newCardId = cartIdGenerator.incrementAndGet();
+        newCart.setId(newCardId);
+        return cartRepository.save(newCart).getId();
     }
 }
