@@ -6,6 +6,7 @@ import lk.ijse.dep13.zeattle_tech.dto.request.ProductUpdateRequestTO;
 import lk.ijse.dep13.zeattle_tech.entity.Category;
 import lk.ijse.dep13.zeattle_tech.entity.Image;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
+import lk.ijse.dep13.zeattle_tech.exception.AlreadyExistsException;
 import lk.ijse.dep13.zeattle_tech.exception.ProductNotFoundException;
 import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
 import lk.ijse.dep13.zeattle_tech.repository.CategoryRepository;
@@ -112,6 +113,10 @@ public class ProductServiceImpl implements ProductService {
         DB save it as new category, otherwise save the new Product
          */
 
+        if (productExists(request.getName(), request.getBrand())) {
+            throw new AlreadyExistsException(request.getName() + " " + request.getBrand() + " already exists, you may update this product instead of adding another product");
+        }
+
         Category category = Optional.ofNullable(categoryRepository.findByName(request.getCategory().getName()))
                 .orElseGet(()->{
                     Category newCategory = new Category(request.getCategory().getName());
@@ -130,6 +135,10 @@ public class ProductServiceImpl implements ProductService {
                 request.getStock(),
                 request.getDescription(),
                 category);
+    }
+
+    private boolean productExists(String name, String brand) {
+        return productRepository.existsByNameAndBrand(name, brand);
     }
 
     @Override
