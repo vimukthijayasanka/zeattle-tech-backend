@@ -1,5 +1,7 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lk.ijse.dep13.zeattle_tech.enums.OrderStatus;
 import lombok.AllArgsConstructor;
@@ -18,6 +20,7 @@ import java.util.Set;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "orders") // here name need to orders cuz conflict occur due to naming convention in table and attribute
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

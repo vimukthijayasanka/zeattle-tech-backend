@@ -3,9 +3,11 @@ package lk.ijse.dep13.zeattle_tech.service.util;
 import lk.ijse.dep13.zeattle_tech.dto.ImageDTO;
 import lk.ijse.dep13.zeattle_tech.dto.OrderDTO;
 import lk.ijse.dep13.zeattle_tech.dto.ProductDTO;
+import lk.ijse.dep13.zeattle_tech.dto.UserDTO;
 import lk.ijse.dep13.zeattle_tech.entity.Image;
 import lk.ijse.dep13.zeattle_tech.entity.Order;
 import lk.ijse.dep13.zeattle_tech.entity.Product;
+import lk.ijse.dep13.zeattle_tech.entity.User;
 import lk.ijse.dep13.zeattle_tech.repository.ImageRepository;
 import lk.ijse.dep13.zeattle_tech.service.S3Service;
 import lombok.RequiredArgsConstructor;
@@ -47,5 +49,9 @@ public class Transformer {
 
     public OrderDTO orderToOrderDTO(Order order) {
         return modelMapper.map(order, OrderDTO.class);
+    }
+
+    public UserDTO userToUserDTO(User user) {
+        return modelMapper.map(user, UserDTO.class);
     }
 }

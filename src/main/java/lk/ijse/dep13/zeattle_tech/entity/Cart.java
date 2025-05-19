@@ -1,5 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ public class Cart {
     private Set<CartItem> cartItems;
 
     @OneToOne
+    @JsonManagedReference
     @JoinColumn(name = "user_id")
     private User user;
 

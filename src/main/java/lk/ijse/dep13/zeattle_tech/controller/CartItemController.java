@@ -1,9 +1,13 @@
 package lk.ijse.dep13.zeattle_tech.controller;
 
+import lk.ijse.dep13.zeattle_tech.dto.UserDTO;
+import lk.ijse.dep13.zeattle_tech.entity.Cart;
+import lk.ijse.dep13.zeattle_tech.entity.User;
 import lk.ijse.dep13.zeattle_tech.exception.ResourceNotFoundException;
 import lk.ijse.dep13.zeattle_tech.response.ApiResponse;
 import lk.ijse.dep13.zeattle_tech.service.cart.CartItemService;
 import lk.ijse.dep13.zeattle_tech.service.cart.CartService;
+import lk.ijse.dep13.zeattle_tech.service.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +19,17 @@ import org.springframework.web.bind.annotation.*;
 public class CartItemController {
     private final CartItemService cartItemService;
     private final CartService cartService;
+    private final UserService userService;
 
     @PostMapping("/item/add")
-    public ResponseEntity<ApiResponse> addItemToCart(@RequestParam(required = false) Long cartId,
+    public ResponseEntity<ApiResponse> addItemToCart(
                                                      @RequestParam Long productId,
                                                      @RequestParam Integer quantity) {
         try {
-            if (cartId == null) {
-                cartId = cartService.initializeNewCart();
-            }
-            cartItemService.addItemToCart(cartId, productId, quantity);
-            return ResponseEntity.ok(new ApiResponse("Add Item success", null));
+            User userById = userService.getEntityUserById(4L);
+            Cart cart = cartService.initializeNewCart(userById);
+            cartItemService.addItemToCart(cart.getId(), productId, quantity);
+            return ResponseEntity.ok(new ApiResponse("Add item success", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
         }

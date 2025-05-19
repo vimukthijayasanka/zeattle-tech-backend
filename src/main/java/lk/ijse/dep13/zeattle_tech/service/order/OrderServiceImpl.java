@@ -30,7 +30,7 @@ public class OrderServiceImpl implements OrderService{
     private final Transformer transformer;
 
     @Override
-    public Order placeOrder(Long userId) {
+    public OrderDTO placeOrder(Long userId) {
         Cart cart = cartService.getCartByUserId(userId);
 
         Order order = createOrder(cart);
@@ -39,10 +39,8 @@ public class OrderServiceImpl implements OrderService{
         order.setOrderItems(new HashSet<>(orderItemList));
         order.setTotalAmount(calculateTotalAmount(orderItemList));
         Order saveOrder = orderRepository.save(order);
-
         cartService.clearCart(cart.getId());
-
-        return saveOrder;
+        return transformer.orderToOrderDTO(saveOrder);
     }
 
     @Override

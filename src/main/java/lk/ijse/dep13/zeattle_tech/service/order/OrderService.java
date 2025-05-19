@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 public interface OrderService {
-    Order placeOrder(Long userId);
+    OrderDTO placeOrder(Long userId);
 
     Order createOrder(Cart cart);
 

@@ -1,6 +1,7 @@
 package lk.ijse.dep13.zeattle_tech.service.cart;
 
 import lk.ijse.dep13.zeattle_tech.entity.Cart;
+import lk.ijse.dep13.zeattle_tech.entity.User;
 import lk.ijse.dep13.zeattle_tech.repository.CartItemRepository;
 import lk.ijse.dep13.zeattle_tech.repository.CartRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +9,9 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.swing.text.html.Option;
 import java.math.BigDecimal;
+import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
@@ -43,11 +46,13 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public Long initializeNewCart() {
-        Cart newCart = new Cart();
-        Long newCardId = cartIdGenerator.incrementAndGet();
-        newCart.setId(newCardId);
-        return cartRepository.save(newCart).getId();
+    public Cart initializeNewCart(User user) {
+      return Optional.ofNullable(getCartByUserId(user.getId()))
+              .orElseGet(() ->{
+                  Cart cart = new Cart();
+                  cart.setUser(user);
+                  return cartRepository.save(cart);
+        });
     }
 
     @Override
