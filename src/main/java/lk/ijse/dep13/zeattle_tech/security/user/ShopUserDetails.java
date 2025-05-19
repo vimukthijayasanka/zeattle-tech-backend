@@ -1,4 +1,6 @@
 package lk.ijse.dep13.zeattle_tech.security.user;
 
-public interface ShopUserDetails {
+import org.springframework.security.core.userdetails.UserDetails;
+
+public interface ShopUserDetails extends UserDetails {
 }
