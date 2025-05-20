@@ -9,6 +9,9 @@ import lk.ijse.dep13.zeattle_tech.request.CreateUserRequest;
 import lk.ijse.dep13.zeattle_tech.request.UserUpdateRequest;
 import lk.ijse.dep13.zeattle_tech.service.util.Transformer;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -19,6 +22,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserRepository userRepository;
     private final Transformer transformer;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserDTO getUserById(Long userId) {
@@ -38,7 +42,7 @@ public class UserServiceImpl implements UserService{
                     user.setUsername(request.getUsername());
                     user.setFirstName(request.getFirstName());
                     user.setLastName(request.getLastName());
-                    user.setPassword(request.getPassword());
+                    user.setPassword(passwordEncoder.encode(request.getPassword()));
                     user.setEmail(request.getEmail());
                     return transformer.userToUserDTO(userRepository.save(user));
                 }).orElseThrow(()-> new AlreadyExistsException(request.getEmail() + "already exists!"));
@@ -58,5 +62,12 @@ public class UserServiceImpl implements UserService{
         userRepository.findById(userId).ifPresentOrElse(userRepository::delete, () -> {
             throw new ResourceNotFoundException("User with id " + userId + " not found");
         });
+    }
+
+    @Override
+    public User getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        return userRepository.findByUsername(username);
     }
 }

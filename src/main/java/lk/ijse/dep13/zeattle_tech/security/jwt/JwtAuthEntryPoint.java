@@ -9,7 +9,6 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,7 +23,7 @@ public class JwtAuthEntryPoint implements AuthenticationEntryPoint {
         final Map<String,Object> body = new HashMap<>();
         body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
         body.put("error", "Unauthorized");
-        body.put("message", authException.getMessage());
+        body.put("message", "You may login and try again");
         body.put("path", request.getRequestURI());
 
         final ObjectMapper objectMapper = new ObjectMapper();
