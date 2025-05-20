@@ -1,5 +1,7 @@
 package lk.ijse.dep13.zeattle_tech.controller;
 
+import io.jsonwebtoken.Jwt;
+import io.jsonwebtoken.JwtException;
 import lk.ijse.dep13.zeattle_tech.dto.UserDTO;
 import lk.ijse.dep13.zeattle_tech.entity.Cart;
 import lk.ijse.dep13.zeattle_tech.entity.User;
@@ -26,12 +28,14 @@ public class CartItemController {
                                                      @RequestParam Long productId,
                                                      @RequestParam Integer quantity) {
         try {
-            User userById = userService.getEntityUserById(4L);
+            User userById = userService.getAuthenticatedUser();
             Cart cart = cartService.initializeNewCart(userById);
             cartItemService.addItemToCart(cart.getId(), productId, quantity);
             return ResponseEntity.ok(new ApiResponse("Add item success", null));
         } catch (ResourceNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(), null));
+        } catch (JwtException e){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(e.getMessage(), null));
         }
     }
 
